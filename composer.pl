@@ -19,6 +19,8 @@
 %       ?- X =: plus(1,2).
 %       X = 3.
 %
+% When not combined with '<-'/2, it is equivalent to `call(Predicate, Defined)`.
+%
 % This operator provides syntax that resembles functional notation, but it
 % does *not* facilitate functional syntax. It is just notation for emphasizing
 % the last component of a relation. E.g.,
@@ -31,27 +33,36 @@ V =: Pred     :- Pred \= _ <- _, call(Pred, V).
 
 %% +TruncatedPred1 <- +TruncatedPred0
 % 
-% Compose predicates, equivalent to
+% Compose predicates on their ultimate and penultimate arguments.
+% In the simplest case, `TruncatedPred1 <- TruncatedPred0` It is equivalent to
 %
 %   call(TruncatedPred0, X), call(TruncatedPred1, X)
 %
-% e.g.:
+% With X left implicit. E.g.:
 %
 %   ?- write <- string_concat("Hello, ", "world!").
 %   Hello, world!
 %
-% Used with =:/2, these compositions can be chained, with intermediate argumetns
-% supplied. E.g.,
-% 
-%   ?- W = "ABCDEFG",
-%      LowerCaseReversed =: inv string_chars <- reverse <- string_chars <- string_lower(W).
+% Used with =:/2, these compositions can be chained to obtain a result on the lhs,
+% with the intermediate arguments left implicit. It lets one eliminate redundant veriables
+% when one's only dealing with a simple flow of data or series of transformations. E.g., we
+% can replace this
+%
+%   ?- string_lower("ABCDEFG", Lower), string_chars(Lower, Chars), reverse(Chars, RevChars),
+%   string_chars(RevChars, LowerCaseReversed).
+%
+% with the following:
+%
+%   ?- LowerCaseReversed =: inv string_chars <- reverse <- string_chars <- string_lower("ABCDEFG").
 %   LowerCaseReversed = "gfedcba".
 
 P2 <- P1 <- P0 :- X =: P0, P1_ =.. [P1,X], P2 <- P1_.
-
 P1 <- P0 :- X =: P0, X =: P1.
 
-%% "pass through" arguments.
+%% //(+Pred, ?Var, ?Var)
+%% //(?Var, ?Var)
+%
+% "pass through" arguments.
 %
 % Useful for testing an arguments properties, e.g.:
 %
@@ -76,9 +87,10 @@ P1 <- P0 :- X =: P0, X =: P1.
 %   ?- inv(length, 3, X).
 %   X = [_G32873, _G32876, _G32879].
 %
-% inv/2 is sugar to allow for cleaner inversion in compositions:
+% inv/2 is sugar to allow for cleaner inversions in compositions:
 %
-%   numlist(1,5,Ns),<- <- length
+%   ?- FiveThrees =: maplist(plus(1)) <- //maplist(=(2)) <- inv length(5).
+%   FiveThrees = [3, 3, 3, 3, 3] 
 
 inv(P, A, B) :- call(P, B, A).
 inv(P0, B)    :-
