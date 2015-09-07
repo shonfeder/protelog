@@ -11,7 +11,7 @@
             inv/3
           ]).
 
-% Module `composer` is an experiment. It strives to offer simple syntactic sugar for
+% Module `composer` is an experiment. It strives to offer simple syntax sugar for
 % indicating structures amounting to chains of data transformation. I am not sure that it is
 % useful, or that it is in any way preferable to the either Michael Hendricks `func` package 
 % or Carlo Capelli's `lifter` module.
