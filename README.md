@@ -27,9 +27,9 @@ Which expands to
 
 ```prolog
 tails([], []).
-    tails([B|C], [A|D]) :-
+tails([B|C], [A|D]) :-
     A=[B|C],
-tails(C, D).
+    tails(C, D).
 ```
 
 `@/2` can be used with any terms, not just lists. I think it might
