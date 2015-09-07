@@ -1,9 +1,9 @@
 :- module(capture_compounds, [(@)/2]).
 
-% Capture Compounds with using the '@' operator
+% Capture Compounds using the '@/2' operator
 % 
-% Provides syntax akin to Haskell's `@` or MLs `as`
-% It allows for capturing lists as a special case:
+% module `capture_compounds` provides syntax akin to Haskell's `@` or MLs `as`
+% It allows for capturing lists as a special case. E.g.,
 %
 %       ...,
 %       term(L@[X|Xs])
@@ -16,7 +16,9 @@
 %       L = [X|Xs],
 %       ...,
 %
-% Can be used to capture any comopound, and in rule heads:
+% @/2 nan be used to capture any comopound.
+%
+% Term expansion is used to extract patterns using @/2 in rule heads as well:
 % 
 %   term(Capture@compound(With, Args), arg) :-
 %       do(With),
@@ -60,16 +62,16 @@ replace(A, B, [C|Cs], [R|Rs]) :-
 
 %% functor_of(+F, +Term)
 %
-%   True if Term is a compound with F is the functor of Term.
+%   True if Term is a compound and F is its functor.
 
 functor_of(F, Term) :- compound(Term), functor(Term, F, _).
 
-%% contains_captureCompouns(+Term)
+%% contains_captureCompounds(+Term)
 %
-%   True if Term is a compound and contains at least one term
+%   True if Term is a compound that contains at least one term
 %   with the functur @.
 
-contains_captureCompouns(Term) :-
+contains_captureCompounds(Term) :-
     compound(Term),
     compound_name_arguments(Term, _, Args),
     member(X, Args),
@@ -102,12 +104,32 @@ list_as_tupples([X|Xs], (X,Rest)) :-
     list_as_tupples(Xs, Rest).
 
 
+/*
+    TERM EXPANSIONS
+*/
+
+%% Expand capture_compounds in rule heads.
+%
+
 user:term_expansion((Head :- Body), (NewHead :- NewBody)) :-
-    contains_captureCompouns(Head),
+    contains_captureCompounds(Head),
     extract_captureCompounds(Head, NewHead, CaptureCompounds),
     NewBody = (CaptureCompounds, Body).
 
+%% Expand capture_compounds in facts.
+%
+
+user:term_expansion(Fact, (Head :- Body)) :-
+    Fact \= (_ :- _),
+    contains_captureCompounds(Fact),
+    extract_captureCompounds(Fact, Head, CaptureCompounds),
+    Body = CaptureCompounds.
+
+%% Expand capture_compounds in goals.
+%
+
 user:goal_expansion(Goal, NewGoal) :-
-    contains_captureCompouns(Goal),
+    contains_captureCompounds(Goal),
     extract_captureCompounds(Goal, Term, CaptureCompounds),
     NewGoal = (Term, CaptureCompounds).
+
