@@ -105,7 +105,7 @@ P1 <- P0 :- X =: P0, X =: P1.
 %   FiveThrees = [3, 3, 3, 3, 3] 
 
 inv(P, A, B) :- call(P, B, A).
-inv(P0, B)    :-
+inv(P0, B) :-
     P0 =.. [F|Args],
     append(Rest, [A], Args),
     append(Rest, [B, A], InvertedArgs),
