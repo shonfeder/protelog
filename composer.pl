@@ -84,8 +84,7 @@ P1 <- P0 :- X =: P0, X =: P1.
 %
 %   X =: maplist(inv string_chars) <- maplist(reverse) <- maplist(string_chars) <- //["abc",
 %   "123", "xyz"].
-%   
-X = ["cba", "321", "zyx"] 
+%   X = ["cba", "321", "zyx"] 
 
 //(P1, X, X) :- call(P1, X).
 //(X, X).
