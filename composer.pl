@@ -11,6 +11,11 @@
             inv/3
           ]).
 
+% Module `composer` is an experiment. It strives to offer simple syntactic sugar for
+% indicating structures amounting to chains of data transformation. I am not sure that it is
+% useful, or that it is in any way preferable to the either Michael Hendricks `func` package 
+% or Carlo Capelli's `lifter` module.
+
 %% ?Defined =: +Predicate
 %
 % Provide a definition-like syntax for unifying with the last argument of
@@ -62,17 +67,25 @@ P1 <- P0 :- X =: P0, X =: P1.
 %% //(+Pred, ?Var, ?Var)
 %% //(?Var, ?Var)
 %
-% "pass through" arguments.
+% "Pass through" arguments.
 %
-% Useful for testing an arguments properties, e.g.:
+% Useful for testing an argument's properties, e.g.:
 %
-%       ?-  X =: sumlist <- //is_list <- last([1,2,3,[4,5,6]]).
-%       X = 15.
+%   ?-  X =: sumlist <- //is_list <- last([1,2,3,[4,5,6]]).
+%   X = 15.
 %
 % Also useful for passing along bound partial terms, e.g.:
 %
-%       ?- TenThrees =: //maplist(=(3)) <- inv length(10).
-%       TenThrees = [3, 3, 3, 3, 3, 3, 3, 3, 3|...].
+%   ?- TenThrees =: //maplist(=(3)) <- inv length(10).
+%   TenThrees = [3, 3, 3, 3, 3, 3, 3, 3, 3|...].
+%
+% Finally, it can be used to emphasize the initial argument
+% fed into the chain of predicates:
+%
+%   X =: maplist(inv string_chars) <- maplist(reverse) <- maplist(string_chars) <- //["abc",
+%   "123", "xyz"].
+%   
+X = ["cba", "321", "zyx"] 
 
 //(P1, X, X) :- call(P1, X).
 //(X, X).
