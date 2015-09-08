@@ -39,5 +39,29 @@ compound term and call the term, but I'm not sure. E.g.,
 ```prolog
 contrived_call(Pred@p(thing), Arg) :- call(Pred, stuff, Arg).
 contrived_call(Pred@q(_,_,_), _)   :- Pred.
-    contrived_call(Pred, Arg)          :- call(Pred, Arg).
+contrived_call(Pred, Arg)          :- call(Pred, Arg).
 ```
+
+### collectors ###
+
+Module `collectors` gives an alternative syntax for aggregating,
+collecting, and testing solutions. It provides 3 operators, `are/2`,
+`of/2`, and `of_all/2`. `are/2` is sugar for `findall/3`. `of/2` is
+combined with special compounds in its left argument to dispatch calls
+to `aggregate_all/3` and `findnsols/3`. `of_all/2` facilitates calling
+some goal for all solutions of a condition: it is like a `for_each/2`
+that can leave bindings.
+
+```prolog
+ns(Ns) :-
+    Ns are { X | between(1, 100, N),
+                 N^2 > 3,
+                 X is 2 * N }.
+
+%% ...
+
+%% tbd
+
+```
+
+I'm taking a break.

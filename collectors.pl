@@ -12,12 +12,40 @@
 :- meta_predicate are(?,:), of(?,:), of_all(?,:).
 
 E :< S :- member(E, S).
- 
+
+/*
+    are/2: sugar for findall/3
+*/
+
 Collected are {Collect|Conditions} :-
     findall(Collect, Conditions, Collected).
 Collected are (Module:{Collect|Conditions}) :-
     Module:findall(Collect, Conditions, Collected).
 
+
+/*
+    of/2: special aggregation operations on all solutions of a goal
+*/
+
+%% Throw a domain error if the left arguemnt to of/2 is an invalid parameter.
+%
+
+valid_of_parameter(count(_)). 
+valid_of_parameter(sum(_)).
+valid_of_parameter(max(_)).
+valid_of_parameter(min(_)).
+valid_of_parameter(set(_)). 
+valid_of_parameter(bag(_)). 
+valid_of_parameter(sorted(_)).
+valid_of_parameter(n(_,_)).
+
+invalid_of_param_error(InvalidArg) :-
+    ValidParams = [count/1, sum/1, max/1, min/1, set/1, bag/1, sorted/1, n/2],
+    domain_error('a valid parameter to of/2'-ValidParams, InvalidArg).
+
+%% The left arg to of/2 is invalid if it's a variable
+Var of _ :- var(Var), type_error(nonvar, Var).
+    
 count(Count) of {_Collect|Conditions} :-
     aggregate_all(count, Conditions, Count).
 count(Count) of (Module:{_Collect|Conditions}) :-
@@ -27,7 +55,6 @@ sum(Sum) of {Collect|Conditions} :-
     aggregate_all(sum(Collect), Conditions, Sum).
 sum(Sum) of (Module:{Collect|Conditions}) :-
     Module:aggregate_all(sum(Collect), Conditions, Sum).
-
 
 max(Max) of {Collect|Conditions} :-
     aggregate_all(max(Collect), Conditions, Max).
@@ -61,6 +88,16 @@ n(N, Sols) of {Collect|Conditions} :-
 n(N, Sols) of (Module:{Collect|Conditions}) :-
     Module:findnsols(N, Collect, Conditions, Sols).
 
+%% If none of the previous rules to of/2 were tried, then
+%% check whether the left argumetn might have been invalid
+
+InvalidArg of _ :-
+    \+ valid_of_parameter(InvalidArg),
+    invalid_of_param_error(InvalidArg).
+
+/*
+    of_all/2: actualizing and checking all solutions of condition
+*/
 
 %% Will actualize predications of all solutions in conditions. E.g.:
 %

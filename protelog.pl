@@ -4,4 +4,3 @@
               collectors,
               composer
             ]).
-
