@@ -45,7 +45,7 @@ invalid_of_param_error(InvalidArg) :-
 
 %% The left arg to of/2 is invalid if it's a variable
 Var of _ :- var(Var), type_error(nonvar, Var).
-    
+
 count(Count) of {_Collect|Conditions} :-
     aggregate_all(count, Conditions, Count).
 count(Count) of (Module:{_Collect|Conditions}) :-
@@ -102,7 +102,7 @@ InvalidArg of _ :-
 %% Will actualize predications of all solutions in conditions. E.g.:
 %
 %       length(X,8) of_all X :< [A,B,C,D]
-%       
+%
 %   Will make each of A, B, C, D an 8 element list.
 %
 %       (V is  X * X, V < 100) of_all (between(1,9,X), V :< Ns).
